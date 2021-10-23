@@ -1,7 +1,10 @@
-export interface UserAttributes {
+export interface UserAttributes extends UserBaseAttributes {
   id?: number;
-  email: string;
-  password: string;
   companyName: string;
   name: string;
+}
+
+export interface UserBaseAttributes {
+  email: string;
+  password: string;
 }

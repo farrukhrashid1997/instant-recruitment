@@ -1,7 +1,7 @@
 import Users from "../models/user";
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
-import { UserAttributes } from "../types/user";
+import { UserAttributes, UserBaseAttributes } from "../types/user";
 import { ResponseError } from "../types/general";
 
 export const signup: RequestHandler = async (req, res, next) => {
@@ -19,7 +19,7 @@ export const signup: RequestHandler = async (req, res, next) => {
 
 export const login: RequestHandler = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body as UserBaseAttributes;
     const user = await Users.findOne({ where: { email: email } });
     if (user === null) {
       res.status(404).json({ message: "User doesn't exist", code: "USER_NOT_FOUND" });
