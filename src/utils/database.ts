@@ -6,5 +6,5 @@ export const sequelize = new Sequelize("instant-recruitment", "root", "password"
 });
 
 export const initDb = () => {
-  return sequelize.sync({ force: true });
+  return sequelize.sync();
 };
