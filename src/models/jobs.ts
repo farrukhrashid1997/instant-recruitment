@@ -1,7 +1,10 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
+import { JobAttributes } from "../types/jobs";
 import { sequelize } from "../utils/database";
 
-const Jobs = sequelize.define("jobs", {
+interface JobInstance extends Model, JobAttributes {}
+
+const Jobs = sequelize.define<JobInstance>("jobs", {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
