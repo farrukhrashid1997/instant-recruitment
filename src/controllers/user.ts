@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
 import { UserAttributes, UserBaseAttributes } from "../types/user";
 import { ResponseError } from "../types/general";
+import jwt from "jsonwebtoken";
+require("dotenv").config();
 
 export const signup: RequestHandler = async (req, res, next) => {
   const saltRounds: number = 12;
@@ -22,8 +24,9 @@ export const login: RequestHandler = async (req, res, next) => {
     const { email, password } = req.body as UserBaseAttributes;
     const user = await Users.findOne({ where: { email: email } });
     if (user === null) {
-      res.status(404).json({ message: "User doesn't exist", code: "USER_NOT_FOUND" });
-      return;
+      const error: ResponseError = new Error("User doesn't exist");
+      error.statusCode = 401;
+      throw error;
     }
     const checkPassword = await bcrypt.compare(password, user.password);
     if (!checkPassword) {
@@ -31,6 +34,16 @@ export const login: RequestHandler = async (req, res, next) => {
       error.statusCode = 401;
       throw error;
     }
+    const secretKey = process.env.TOKEN_KEY!; //this exclaimation mark tells ts that we trust the value is non-nullable
+    const token = jwt.sign(
+      {
+        email: user.email,
+        userId: user.id,
+      },
+      secretKey,
+      { expiresIn: process.env.TOKEN_EXPIRATION }
+    );
+    res.status(200).json({ token: token });
   } catch (err) {
     next(err);
   }
