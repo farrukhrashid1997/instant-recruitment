@@ -4,6 +4,8 @@ import jobRoutes from "./routes/job";
 import userRoutes from "./routes/user";
 import bodyParser from "body-parser";
 import { ResponseError } from "./types/general";
+import Users from "./models/user";
+import Jobs from "./models/jobs";
 
 const app = express();
 
@@ -29,6 +31,10 @@ app.use((error: ResponseError, req: Request, res: Response, next: NextFunction) 
   const message = error.message;
   res.status(status).json({ message: message });
 });
+
+/**One user can post many jobs */
+Jobs.belongsTo(Users, { constraints: true, onDelete: "CASCADE" });
+Users.hasMany(Jobs);
 
 initDb().then(() => {
   app.listen(8080);

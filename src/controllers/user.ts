@@ -1,7 +1,7 @@
 import Users from "../models/user";
 import bcrypt from "bcryptjs";
 import { RequestHandler } from "express";
-import { UserAttributes, UserBaseAttributes } from "../types/user";
+import { UserAttributes, UserBaseAttributes, UserTokenInterface } from "../types/user";
 import { ResponseError } from "../types/general";
 import jwt from "jsonwebtoken";
 require("dotenv").config();
@@ -35,14 +35,11 @@ export const login: RequestHandler = async (req, res, next) => {
       throw error;
     }
     const secretKey = process.env.TOKEN_KEY!; //this exclaimation mark tells ts that we trust the value is non-nullable
-    const token = jwt.sign(
-      {
-        email: user.email,
-        userId: user.id,
-      },
-      secretKey,
-      { expiresIn: process.env.TOKEN_EXPIRATION }
-    );
+    const valuesInToken: UserTokenInterface = {
+      email: user.email,
+      userId: user.id!,
+    };
+    const token = jwt.sign(valuesInToken, secretKey, { expiresIn: process.env.TOKEN_EXPIRATION });
     res.status(200).json({ token: token });
   } catch (err) {
     next(err);

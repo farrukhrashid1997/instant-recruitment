@@ -8,3 +8,8 @@ export interface UserBaseAttributes {
   email: string;
   password: string;
 }
+
+export interface UserTokenInterface extends Request {
+  userId?: number;
+  email?: string;
+}
